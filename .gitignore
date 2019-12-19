@@ -4,3 +4,4 @@ build-SimulGenet/*.cpp
 build-SimulGenet/*.stash
 build-SimulGenet/*.h
 build-SimulGenet/SimulGenet
+build-SimulGenet/Makefile
