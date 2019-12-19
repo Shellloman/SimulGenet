@@ -29,16 +29,8 @@ void Stochastique::simulation(){
     }
 }
 
-QChartView* Stochastique::graph(){
-    chart->addSeries(series);
-    chart->createDefaultAxes();
-    chart->setTitle("Modèle théorique des variations de fréquence allélique");
-    chart->axes(Qt::Vertical).first()->setRange(0,1);
-    chart->legend()->setVisible(false);
-    chart->setAnimationOptions(QChart::AllAnimations);
-    chartView = new QChartView(chart);
-    chartView->setRenderHint(QPainter::Antialiasing);
-    return chartView;
+QLineSeries* Stochastique::graph(){
+    return series;
 }
 void Stochastique::Q(){
     q = 1-p;

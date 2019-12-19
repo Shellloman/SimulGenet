@@ -14,7 +14,7 @@ class Stochastique
 public:
     Stochastique(unsigned int ,unsigned int ,double, double , double , double);
     void simulation();
-    QChartView* graph();
+    QLineSeries* graph();
 private:
     void derive();
     void NewGeneration();
