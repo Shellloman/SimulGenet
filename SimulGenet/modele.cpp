@@ -5,7 +5,6 @@ Modele::Modele(double pp,unsigned int genn, double sAAA, double sAaa, double saa
     p = pp;gen = genn+1; sAA = sAAA; sAa = sAaa; saa = saaa;
     q = 1-p;
     series = new QLineSeries();
-    chart = new QChart();
 }
 
 Modele::~Modele(){

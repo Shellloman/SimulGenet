@@ -22,20 +22,27 @@ class MaFenetre : public QWidget // On hérite de QWidget (IMPORTANT)
 
     public:
     MaFenetre();
+    void Graph();
+    QLineSeries* ptr_tmp(int);
+    void setMainLayout();
+    void setstyle();
 
     public slots:
     void confirm();
     void courbe_theo();
     void courbe_stocha();
-    void setstyle();
-    void setMainLayout();
     void flip();
+    void save();
+    void vider_graph();
 
     private:
-    int f10;
-    QPushButton *b_model,*b_quitter,*b_stocha,*fois10;
+    int f10,nb_series,boucle_series;
+    QPushButton *b_model,*b_save,*b_stocha,*fois10,*b_vider;
     QLabel *titre ,*image,*para;
     QPixmap *img;
+    QLineSeries *serie;
+    QLineSeries *series[3];
+    QChart *chart;
     QChartView *chartView;
     QGridLayout* mainLayout,*sublayout,*subplayout;
     QLCDLabel *p_lcd,*gen_lcd,*pop_lcd,*sAA_lcd,*sAa_lcd,*saa_lcd;

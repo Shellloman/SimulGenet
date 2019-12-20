@@ -14,11 +14,13 @@ MaFenetre::MaFenetre() : QWidget()
 
     // Construction du bouton
     b_model = new QPushButton("courbe théorique", this);
-    b_model->setGeometry(50,90,300,40);
+    b_model->setGeometry(50,90,300,36);
     b_stocha = new QPushButton("courbe stochastique", this);
-    b_stocha->setGeometry(50,150,300,40);
-    b_quitter = new QPushButton("quitter la simulation", this);
-    b_quitter->setGeometry(50,210,300,40);
+    b_stocha->setGeometry(50,140,300,36);
+    b_save= new QPushButton("sauvegarder courbe", this);
+    b_save->setGeometry(50,190,300,36);
+    b_vider = new QPushButton("réinitialiser graph",this);
+    b_vider ->setGeometry(50,240,300,36);
     p_lcd = new QLCDLabel("0",this);
     p_lcd->setGeometry(180,300,50,35);
     p_slide = new QDSlider(this);
@@ -73,13 +75,45 @@ MaFenetre::MaFenetre() : QWidget()
     QObject::connect(pop_slide, SIGNAL(doubleValueChanged(double)),pop_lcd,SLOT(ChangeValue(double))) ;
     QObject::connect(p_slide, SIGNAL(doubleValueChanged(double)),p_lcd,SLOT(ChangeValue(double))) ;
     QObject::connect(gen_slide, SIGNAL(doubleValueChanged(double)),gen_lcd,SLOT(ChangeValue(double))) ;
-    QObject::connect(b_quitter, SIGNAL(clicked()), this, SLOT(confirm()));
+    QObject::connect(b_save, SIGNAL(clicked()), this, SLOT(save()));
     QObject::connect(fois10, SIGNAL(clicked()), this, SLOT(flip()));
     QObject::connect(b_model, SIGNAL(clicked()), this, SLOT(courbe_theo()));
     QObject::connect(b_stocha, SIGNAL(clicked()), this, SLOT(courbe_stocha()));
+    QObject::connect(b_vider, SIGNAL(clicked()), this, SLOT(vider_graph()));
+    chart = nullptr;
     chartView = nullptr;
     layout = true;
     f10 = 1;
+    nb_series = 0;
+    boucle_series = 0;
+    for (int i=0;i<3;i++) series[i]=new QLineSeries();
+}
+void MaFenetre::vider_graph(){
+    for (int i=0;i<3;i++){delete series[i];series[i]=new QLineSeries();}
+}
+void MaFenetre::Graph(){
+    if (chart == nullptr){ chart = new QChart();
+    }else{delete chart;chart = new QChart();}
+    chart->addSeries(serie);
+    for (int i=0;i<nb_series;i++){
+        chart->addSeries(ptr_tmp(i));
+    }
+    chart->createDefaultAxes();
+    chart->setTitle("Modèle théorique des variations de fréquence allélique");
+    chart->axes(Qt::Vertical).first()->setRange(0,1);
+    chart->legend()->setVisible(false);
+    chart->setAnimationOptions(QChart::AllAnimations);
+    if (chartView == nullptr){ chartView = new QChartView(chart);
+    }else{delete chartView;chartView = new QChartView(chart);}
+    chartView->setRenderHint(QPainter::Antialiasing);
+    setMainLayout();
+    if (layout) layout = false;
+}
+
+QLineSeries* MaFenetre::ptr_tmp(int i){
+    QLineSeries* tmp = new QLineSeries();
+    for (int j=0;j<series[i]->count();j++) tmp->append(series[i]->at(j));
+    return tmp;
 }
 
 void MaFenetre::setMainLayout(){
@@ -111,25 +145,34 @@ void MaFenetre::confirm()
 
 void MaFenetre::courbe_theo()
 {
-    if (chartView !=NULL) delete chartView;
-    chartView = NULL;
     Modele model(p_lcd->Value(),gen_lcd->Value(), sAA_lcd->Value(), sAa_lcd->Value(), saa_lcd->Value());
     model.simulation();
-    chartView = model.graph();
-    setMainLayout();
-    layout = false;
-    qDebug()<<"ok";
+    serie = model.graph();
+    Graph();
 }
-void MaFenetre::courbe_stocha(){
-    if (chartView !=NULL) delete chartView;
-    chartView = NULL;
+void MaFenetre::courbe_stocha()
+{
     Stochastique stocha(pop_lcd->Value()*f10,gen_lcd->Value(),p_lcd->Value(), sAA_lcd->Value(), sAa_lcd->Value(), saa_lcd->Value());
     stocha.simulation();
-    chartView = stocha.graph();
-    setMainLayout();
-    layout = false;
-    qDebug()<<"ok";
+    serie = stocha.graph();
+    Graph();
 }
+
+void MaFenetre::save(){
+    if (serie != nullptr){
+        if (nb_series<3){
+            for (int i=0;i<serie->count();i++) series[nb_series]->append(serie->at(i));
+            nb_series ++;
+        }else{
+            delete series[boucle_series];
+            series[boucle_series] = new QLineSeries();
+            for (int i=0;i<serie->count();i++) series[boucle_series]->append(serie->at(i));
+            boucle_series++;
+            boucle_series = boucle_series % 3;
+        }
+    }
+}
+
 void MaFenetre::flip(){
     if (f10 ==1){
         f10 = 10;
