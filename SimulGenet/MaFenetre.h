@@ -21,19 +21,19 @@ class MaFenetre : public QWidget // On hérite de QWidget (IMPORTANT)
     Q_OBJECT
 
     public:
-    MaFenetre();
-    void Graph();
-    QLineSeries* ptr_tmp(int);
-    void setMainLayout();
-    void setstyle();
+    MaFenetre();// constructeur
+    void Graph(); // construit le graph
+    QLineSeries* ptr_tmp(int);// copy un ptr
+    void setMainLayout();// affiche le graph
+    void setstyle();//donne le style de la page
 
     public slots:
-    void confirm();
-    void courbe_theo();
-    void courbe_stocha();
-    void flip();
-    void save();
-    void vider_graph();
+    void confirm();// demande si on veut vraiment quitter l'application
+    void courbe_theo();//créer un objet de la class model
+    void courbe_stocha();//créer un objet de la class stochastique
+    void flip();// pass la pop du coeff 1 à 10
+    void save();// stock la serie actuellment aficher pour la reafficher plus tard
+    void vider_graph(); // delete les series stockée
 
     private:
     int f10,nb_series,boucle_series;
