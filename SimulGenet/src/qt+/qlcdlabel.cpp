@@ -11,3 +11,7 @@ void QLCDLabel::ChangeValue(double d){
 double QLCDLabel::Value() const{
     return value;
 }
+
+void QLCDLabel::ChangeName(QString _name){
+    setText(_name);
+}

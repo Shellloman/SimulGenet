@@ -11,6 +11,7 @@ public:
     double Value()const;
 public slots:
     void ChangeValue(double);
+    void ChangeName(QString);
 private:
     double value;
 };

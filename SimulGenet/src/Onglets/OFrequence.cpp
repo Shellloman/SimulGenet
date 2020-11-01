@@ -1,9 +1,10 @@
-#include "MaFenetre.h"
+#include "OFrequence.h"
 
-MaFenetre::MaFenetre() : QWidget()
+OFrequence::OFrequence(QTabWidget *Main) : QWidget()
 {
+    prin = Main;
     // affichage de l'icon
-    setWindowIcon(QIcon(QCoreApplication::applicationDirPath()+"/icon_adn.png"));
+    setWindowIcon(QIcon(QCoreApplication::applicationDirPath()+"data/icon_adn.png"));
     // construction fenetre
     setGeometry(335,140,1250, 800);
 
@@ -75,11 +76,19 @@ MaFenetre::MaFenetre() : QWidget()
     saa_lbl = new QLabel("séléction aa :",this);
     saa_lbl->setGeometry(50,600,120,35);
     // le nom parle de lui même
-    setstyle();
+    //setstyle();
     // permet le changement de couleur si activé ou non
     fois10->setCheckable(true);
     fois10->setStyleSheet("QPushButton{background-color:grey;}QPushButton:checked{background-color:green;}");
 
+    //test
+    test = new ButtonSys(this);
+    test->setCode(QString("A35"));
+    test->setText(QString("ButtonSys test"));
+    test->setGeometry(50,700,200,50);
+
+    QObject::connect(test, SIGNAL(clicked()), this, SLOT(NewWidget()));
+    //fin test
     // connexion de chaque bouton avec un slot
     QObject::connect(b_save, SIGNAL(clicked()), this, SLOT(save()));
     QObject::connect(fois10, SIGNAL(clicked()), this, SLOT(flip()));
@@ -103,10 +112,16 @@ MaFenetre::MaFenetre() : QWidget()
     // initialisation du stockages de series à ajouter au graph
     for (int i=0;i<3;i++) series[i]=new QLineSeries();
 }
-void MaFenetre::vider_graph(){ // vide les series stocker pour ne plus les afficher
+void OFrequence::vider_graph(){ // vide les series stocker pour ne plus les afficher
     for (int i=0;i<3;i++){delete series[i];series[i]=new QLineSeries();}
 }
-void MaFenetre::Graph(){ // afficher les series stocker et/ou recuperer par les fonctions
+void OFrequence::NewWidget(){
+    QWidget *T = new QWidget;
+    T->setGeometry(335,140,1250, 800);
+    prin->addTab(T,"new Tab");
+    qDebug()<<"prout add";
+}
+void OFrequence::Graph(){ // afficher les series stocker et/ou recuperer par les fonctions
     if (chart == nullptr){ chart = new QChart(); // initialise pour la premier fois chart
     }else{delete chart;chart = new QChart();}// si déjà existant on delete
     chart->addSeries(serie);
@@ -125,13 +140,13 @@ void MaFenetre::Graph(){ // afficher les series stocker et/ou recuperer par les 
     if (layout) layout = false; //utilisé pour le setMainLayout
 }
 
-QLineSeries* MaFenetre::ptr_tmp(int i){ // créer un ptr temporaire car le delete chart ..
+QLineSeries* OFrequence::ptr_tmp(int i){ // créer un ptr temporaire car le delete chart ..
     QLineSeries* tmp = new QLineSeries();// et chartView delete aussi les series
     for (int j=0;j<series[i]->count();j++) tmp->append(series[i]->at(j));
     return tmp;
 }
 
-void MaFenetre::setMainLayout(){
+void OFrequence::setMainLayout(){
     if (layout){// la premiere fois que la fonction est executer layout ==true
         mainLayout = new QGridLayout;
         mainLayout->addWidget(chartView, 0, 0);
@@ -142,7 +157,7 @@ void MaFenetre::setMainLayout(){
     }
 }
 
-void MaFenetre::setstyle() // style de la fenetre
+void OFrequence::setstyle() // style de la fenetre
 {
 setStyleSheet("background-color: rgb(66,66,66);"
               "color : white;"
@@ -150,7 +165,7 @@ setStyleSheet("background-color: rgb(66,66,66);"
               "font-size : 20px;");
 }
 
-void MaFenetre::confirm() // fonction pour l'instant inutiliser qui demande si..
+void OFrequence::confirm() // fonction pour l'instant inutiliser qui demande si..
 {                        // on est sur de vouloir quitter
     int rep = QMessageBox::question(this, "Quitter", "Êtes vous sur de fermer le programme ?", QMessageBox::Yes | QMessageBox::No);
     if (rep == QMessageBox::Yes){
@@ -158,14 +173,14 @@ void MaFenetre::confirm() // fonction pour l'instant inutiliser qui demande si..
     }
 }
 
-void MaFenetre::courbe_theo()// création d'une courbe théorique
+void OFrequence::courbe_theo()// création d'une courbe théorique
 {
     Modele model(p_lcd->Value(),gen_lcd->Value(), sAA_lcd->Value(), sAa_lcd->Value(), saa_lcd->Value());
     model.simulation(); // calcul des frequences par generation
     serie = model.graph(); // récupere le ptr de la serie créer
     Graph(); // affiche le graph créer
 }
-void MaFenetre::courbe_stocha()// création d'une courbe "réel" basée sur un model stochastique
+void OFrequence::courbe_stocha()// création d'une courbe "réel" basée sur un model stochastique
 {
     Stochastique stocha(pop_lcd->Value()*f10,gen_lcd->Value(),p_lcd->Value(), sAA_lcd->Value(), sAa_lcd->Value(), saa_lcd->Value());
     stocha.simulation(); // calcul des frequences par generation
@@ -173,7 +188,7 @@ void MaFenetre::courbe_stocha()// création d'une courbe "réel" basée sur un m
     Graph(); // affiche le graph créer
 }
 
-void MaFenetre::save(){ // stock le serie actuellement afficher pour la réafficher la prochaine fois
+void OFrequence::save(){ // stock le serie actuellement afficher pour la réafficher la prochaine fois
     if (serie != nullptr){ // ne fait rien si aucune serie créer
         if (nb_series<3){ // on ne stock que 3 series max pour 4 afficher au total
             for (int i=0;i<serie->count();i++) series[nb_series]->append(serie->at(i));
@@ -188,7 +203,7 @@ void MaFenetre::save(){ // stock le serie actuellement afficher pour la réaffic
     }
 }
 
-void MaFenetre::flip(){// permet de multiplier la pop par 10 ou 1 selon l'état du bouton
+void OFrequence::flip(){// permet de multiplier la pop par 10 ou 1 selon l'état du bouton
     if (f10 ==1){
         f10 = 10;
     }else{

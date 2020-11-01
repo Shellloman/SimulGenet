@@ -1,5 +1,5 @@
-#ifndef MAFENETRE_H
-#define MAFENETRE_H
+#ifndef OFREQ_H
+#define OFREQ_H
 
 #include <QApplication>
 #include <QWidget>
@@ -11,17 +11,19 @@
 #include <QDebug>
 #include <QLCDNumber>
 #include <QSlider>
-#include "qdslider.h"
-#include "qlcdlabel.h"
-#include "modele.h"
-#include "stochastique.h"
+#include <QTabWidget>
+#include "../qt+/qdslider.h"
+#include "../qt+/qlcdlabel.h"
+#include "../Maths/modele.h"
+#include "../Maths/stochastique.h"
+#include "../qt+/buttonsys.h"
 
-class MaFenetre : public QWidget // On hérite de QWidget (IMPORTANT)
+class OFrequence : public QWidget // On hérite de QWidget (IMPORTANT)
 {
     Q_OBJECT
 
     public:
-    MaFenetre();// constructeur
+    OFrequence(QTabWidget *Main);// constructeur
     void Graph(); // construit le graph
     QLineSeries* ptr_tmp(int);// copy un ptr
     void setMainLayout();// affiche le graph
@@ -34,8 +36,10 @@ class MaFenetre : public QWidget // On hérite de QWidget (IMPORTANT)
     void flip();// pass la pop du coeff 1 à 10
     void save();// stock la serie actuellment aficher pour la reafficher plus tard
     void vider_graph(); // delete les series stockée
+    void NewWidget();
 
     private:
+    QTabWidget *prin;
     int f10,nb_series,boucle_series;
     QPushButton *b_model,*b_save,*b_stocha,*fois10,*b_vider;
     QLabel *titre ,*image,*para;
@@ -49,7 +53,9 @@ class MaFenetre : public QWidget // On hérite de QWidget (IMPORTANT)
     QLabel *p_lbl,*gen_lbl,*pop_lbl,*sAA_lbl,*sAa_lbl,*saa_lbl;
     QDSlider *p_slide,*gen_slide,*pop_slide,*sAA_slide,*sAa_slide,*saa_slide;
     bool layout;
+    //test
+    ButtonSys *test;
 
 };
 
-#endif // MAFENETRE_H
+#endif // OFREQ_H
